@@ -24,3 +24,6 @@ eva-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/
+
+# Sublime Text editor
+*.sublime*
