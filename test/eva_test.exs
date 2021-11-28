@@ -11,4 +11,10 @@ defmodule EvaTest do
       assert Eva.eval("\"hello\"") == "hello"
     end
   end
+
+  describe "Math operations" do
+    test "[\"+\", 1, 5]" do
+      assert Eva.eval(["+", 1, 5]) == 6
+    end
+  end
 end
