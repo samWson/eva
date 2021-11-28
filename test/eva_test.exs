@@ -6,5 +6,9 @@ defmodule EvaTest do
     test "1" do
       assert Eva.eval(1) == 1
     end
+
+    test "\"hello\"" do
+      assert Eva.eval("\"hello\"") == "hello"
+    end
   end
 end
