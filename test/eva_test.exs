@@ -2,7 +2,9 @@ defmodule EvaTest do
   use ExUnit.Case
   doctest Eva
 
-  test "greets the world" do
-    assert Eva.hello() == :world
+  describe "Self evaluating expressions" do
+    test "1" do
+      assert Eva.eval(1) == 1
+    end
   end
 end

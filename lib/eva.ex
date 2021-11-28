@@ -1,18 +1,23 @@
 defmodule Eva do
   @moduledoc """
-  Documentation for `Eva`.
+  Eva interpreter.
   """
 
   @doc """
-  Hello world.
+  Evaluates Eva source code.
 
   ## Examples
 
-      iex> Eva.hello()
-      :world
-
+      iex> Eva.eval(1)
+      1
   """
-  def hello do
-    :world
+  def eval(exp) do
+    cond do
+      is_number(exp) ->
+        exp
+
+      true ->
+        raise "Unimplemented"
+    end
   end
 end
