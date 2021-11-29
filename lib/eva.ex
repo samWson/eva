@@ -3,6 +3,12 @@ defmodule Eva do
   Eva interpreter.
   """
 
+  @type expression() ::
+          integer()
+          | String.t()
+          | list()
+          | expression()
+
   @doc """
   Evaluates Eva source code.
 
@@ -11,6 +17,7 @@ defmodule Eva do
       iex> Eva.eval(["+", 5, 1])
       6
   """
+  @spec eval(expression()) :: expression()
   def eval(exp) do
     cond do
       is_number(exp) ->
