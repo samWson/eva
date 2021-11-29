@@ -31,6 +31,15 @@ defmodule Eva do
           ["+" | tail] ->
             eval(hd(tail)) + eval(Enum.at(tail, -1))
 
+          ["*" | tail] ->
+            eval(hd(tail)) * eval(Enum.at(tail, -1))
+
+          ["-" | tail] ->
+            eval(hd(tail)) - eval(Enum.at(tail, -1))
+
+          ["/" | tail] ->
+            eval(hd(tail)) / eval(Enum.at(tail, -1))
+
           _ ->
             raise "Unimplemented"
         end
