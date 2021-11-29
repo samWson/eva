@@ -16,5 +16,9 @@ defmodule EvaTest do
     test "[\"+\", 1, 5]" do
       assert Eva.eval(["+", 1, 5]) == 6
     end
+
+    test "[\"+\", [\"+\", 3, 2], 5]" do
+      assert Eva.eval(["+", ["+", 3, 2], 5]) == 10
+    end
   end
 end

@@ -22,7 +22,7 @@ defmodule Eva do
       is_list(exp) ->
         case exp do
           ["+" | tail] ->
-            hd(tail) + Enum.at(tail, -1)
+            eval(hd(tail)) + eval(Enum.at(tail, -1))
 
           _ ->
             raise "Unimplemented"
