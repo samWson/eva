@@ -10,40 +10,52 @@ defmodule Environment do
     "VERSION" => "0.1"
   }
 
-  @type repository() :: map()
-
   @doc """
   The global variables always defined at the start of the program.
   """
-  @spec global() :: map()
+  @spec global() :: pid()
   def global() do
-    @initial_environment
+    {:ok, pid} = Agent.start_link(fn -> @initial_environment end)
+    pid
+  end
+
+  @doc """
+  Creates a new environment process.
+  """
+  @spec start_link() :: pid()
+  def start_link() do
+    {:ok, pid} = Agent.start_link(fn -> %{} end)
+    pid
   end
 
   @doc """
   Creates a variable with the given name and value.
 
   ## Examples
-  		iex> Environment.define(%{}, "x", 4)
-  		{4, %{"x" => 4}}
+      iex> pid = Environment.start_link()
+      iex> Environment.define(pid, "x", 4)
+      4
   """
-  @spec define(repository(), String.t(), any()) :: {any(), repository()}
-  def define(env, name, value) do
-    updated_env = Map.put(env, name, value)
+  @spec define(pid(), String.t(), any()) :: any()
+  def define(pid, name, value) do
+    Agent.update(pid, fn state -> Map.put(state, name, value) end)
 
-    {updated_env[name], updated_env}
+    lookup(pid, name)
   end
 
   @doc """
   Returns a variable value if it exists or raises an error.
 
   ## Examples
-      iex> Environment.lookup(%{"x" => 10}, "x")
+      iex> pid = Environment.start_link()
+      iex> Environment.define(pid, "x", 10)
+      10
+      iex> Environment.lookup(pid, "x")
       10
   """
-  @spec lookup(repository(), any()) :: any()
-  def lookup(env, name) do
-    result = Map.fetch(env, name)
+  @spec lookup(pid(), any()) :: any()
+  def lookup(pid, name) do
+    result = Agent.get(pid, fn state -> Map.fetch(state, name) end)
 
     case result do
       {:ok, value} -> value
