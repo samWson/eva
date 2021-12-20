@@ -16,10 +16,11 @@ defmodule Eva do
 
   ## Examples
 
-      iex> Eva.eval(["+", 5, 1], %{})
+      iex> pid = Environment.global()
+      iex> Eva.eval(["+", 5, 1], pid)
       6
   """
-  @spec eval(expression(), Environment.repository()) :: expression()
+  @spec eval(expression(), pid()) :: expression()
   def eval(exp, env) do
     cond do
       is_eva_boolean(exp) ->
