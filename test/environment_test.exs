@@ -13,6 +13,14 @@ defmodule EnvironmentTest do
     end
   end
 
+  describe "undefined variables lookup" do
+    test "it returns `:undefined`" do
+      pid = Environment.start_link()
+
+      assert Environment.lookup(pid, "x") == :undefined
+    end
+  end
+
   describe "global environment" do
     test "it returns an initialized global environment process" do
       pid = Environment.global()

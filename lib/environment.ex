@@ -53,13 +53,13 @@ defmodule Environment do
       iex> Environment.lookup(pid, "x")
       10
   """
-  @spec lookup(pid(), any()) :: any()
+  @spec lookup(pid(), any()) :: any() | :undefined
   def lookup(pid, name) do
     result = Agent.get(pid, fn state -> Map.fetch(state, name) end)
 
     case result do
       {:ok, value} -> value
-      _ -> raise "ReferenceError: Variable '#{inspect(name)}' is not defined."
+      _ -> :undefined
     end
   end
 end
