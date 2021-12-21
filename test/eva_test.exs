@@ -65,6 +65,13 @@ defmodule EvaTest do
       assert Eva.eval(["VERSION"], context[:pid]) == "0.1"
     end
 
+    test "variables not inside a list", context do
+      assignment = Eva.eval(["var", "x", 10], context[:pid])
+
+      assert assignment == 10
+      assert Eva.eval("x", context[:pid]) == 10
+    end
+
     test "assignment of global to variable and lookup", context do
       assignment = Eva.eval(["var", "isUser", "true"], context[:pid])
 
@@ -77,6 +84,18 @@ defmodule EvaTest do
 
       assert assignment == 4
       assert Eva.eval(["z"], context[:pid]) == 4
+    end
+  end
+
+  describe "Blocks" do
+    test "two declarations and arithmetic", context do
+      block = ["begin",
+        ["var", "x", 10],
+        ["var", "y", 20],
+        ["+", ["*", "x", "y"], 30]
+      ]
+
+      assert Eva.eval(block, context[:pid]) == 230
     end
   end
 end

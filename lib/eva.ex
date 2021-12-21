@@ -49,15 +49,20 @@ defmodule Eva do
           ["var" | tail] ->
             Environment.define(env, hd(tail), eval(Enum.at(tail, -1), env))
 
+          ["begin" | _] ->
+            evaluate_block(exp, env)
+
           [term] ->
             evaluate_term(term, env)
-
-          _ ->
-            raise "Unimplemented: #{inspect(exp)}"
         end
 
       true ->
-        raise "Unimplemented: #{inspect(exp)}"
+        result = Environment.lookup(env, exp)
+        case result do
+          :undefined ->
+            raise "Unimplemented: #{inspect(exp)}"
+          _ -> result
+        end
     end
   end
 
@@ -91,5 +96,23 @@ defmodule Eva do
 
   defp is_variable_name(exp) do
     is_binary(exp) && String.match?(exp, ~r/^[a-zA-Z][a-zA-Z0-9_]*$/)
+  end
+
+  defp evaluate_block(block, env) do
+    [_| expressions] = block
+
+    evaluate_block(expressions, env, nil)
+  end
+
+  defp evaluate_block([], _, result) do
+    result
+  end
+
+  defp evaluate_block(expressions, env, _) do
+    [exp | tail] = expressions
+
+    result = eval(exp, env)
+
+    evaluate_block(tail, env, result)
   end
 end
