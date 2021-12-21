@@ -9,7 +9,7 @@ defmodule EnvironmentTest do
       value = Environment.define(pid, "bashrc", "~/.bashrc")
 
       assert value == "~/.bashrc"
-      assert Environment.lookup(pid, "bashrc")
+      assert Environment.lookup(pid, "bashrc") == "~/.bashrc"
     end
   end
 
