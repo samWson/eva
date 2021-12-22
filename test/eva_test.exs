@@ -44,14 +44,14 @@ defmodule EvaTest do
       assignment = Eva.eval(["var", "x", 10], context[:pid])
 
       assert assignment == 10
-      assert Eva.eval(["x"], context[:pid]) == 10
+      assert Eva.eval("x", context[:pid]) == 10
     end
 
     test "[\"var\", \"y\", 100]", context do
       assignment = Eva.eval(["var", "y", 100], context[:pid])
 
       assert assignment == 100
-      assert Eva.eval(["y"], context[:pid]) == 100
+      assert Eva.eval("y", context[:pid]) == 100
     end
 
     test "adding to the global environment", context do
