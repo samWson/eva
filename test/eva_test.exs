@@ -106,9 +106,23 @@ defmodule EvaTest do
           "x"
         ],
         "x"
-        ]
+      ]
 
       assert Eva.eval(block, context[:pid]) == 10
+    end
+
+    test "inner block scope access to outer block scope variables", context do
+      block = ["begin",
+        ["var", "value", 10],
+        ["var", "result", ["begin",
+          ["var", "x", ["+", "value", 10]],
+            "x"
+          ]
+        ],
+        "result"
+      ]
+
+      assert Eva.eval(block, context[:pid]) == 20
     end
   end
 end
