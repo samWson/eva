@@ -64,11 +64,11 @@ defmodule Environment do
       {:ok, value} -> value
       _ ->
         Agent.get(pid, fn state -> Map.get(state, "parent_env") end)
-        |> lookup_parent(name)
+        |> resolve(name)
     end
   end
 
-  defp lookup_parent(nil, _), do: :undefined
+  defp resolve(nil, _), do: :undefined
 
-  defp lookup_parent(pid, name), do: lookup(pid, name)
+  defp resolve(pid, name), do: lookup(pid, name)
 end
