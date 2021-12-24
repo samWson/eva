@@ -4,6 +4,7 @@ defmodule Environment do
   """
 
   @initial_environment %{
+    "parent_env" => nil,
     "null" => nil,
     "true" => true,
     "false" => false,
@@ -21,10 +22,12 @@ defmodule Environment do
 
   @doc """
   Creates a new environment process.
+  `parent` is an optional environment pid. The child environment can look up any
+  variables that are defined in the parent.
   """
-  @spec start_link() :: pid()
-  def start_link() do
-    {:ok, pid} = Agent.start_link(fn -> %{} end)
+  @spec start_link(pid() | nil) :: pid()
+  def start_link(parent \\ nil) do
+    {:ok, pid} = Agent.start_link(fn -> %{"parent_env" => parent} end)
     pid
   end
 
@@ -59,7 +62,13 @@ defmodule Environment do
 
     case result do
       {:ok, value} -> value
-      _ -> :undefined
+      _ ->
+        Agent.get(pid, fn state -> Map.get(state, "parent_env") end)
+        |> lookup_parent(name)
     end
   end
+
+  defp lookup_parent(nil, _), do: :undefined
+
+  defp lookup_parent(pid, name), do: lookup(pid, name)
 end

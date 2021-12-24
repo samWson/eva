@@ -31,4 +31,32 @@ defmodule EnvironmentTest do
       assert Environment.lookup(pid, "VERSION") == "0.1"
     end
   end
+
+  describe "inherited environments" do
+    test ~s(when "x" is not defined in the child it will lookup "x" in the parent) do
+      parent = Environment.start_link()
+      Environment.define(parent, "x", 10)
+
+      child = Environment.start_link(parent)
+
+      assert Environment.lookup(child, "x") == 10
+    end
+
+    test ~s(when "x" is defined in the child and the parent the child variable will shadow the parent) do
+      parent = Environment.start_link()
+      Environment.define(parent, "x", 10)
+
+      child = Environment.start_link(parent)
+      Environment.define(child, "x", 20)
+
+      assert Environment.lookup(child, "x") == 20
+    end
+
+    test ~s(when "x" is not defined in the child or parent the lookup returns `:undefined`) do
+      parent = Environment.start_link()
+      child = Environment.start_link(parent)
+
+      assert Environment.lookup(child, "x") == :undefined
+    end
+  end
 end

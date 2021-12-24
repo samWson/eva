@@ -97,5 +97,18 @@ defmodule EvaTest do
 
       assert Eva.eval(block, context[:pid]) == 230
     end
+
+    test "nested block scopes", context do
+      block = ["begin",
+        ["var", "x", 10],
+        ["begin",
+          ["var", "x", 20],
+          "x"
+        ],
+        "x"
+        ]
+
+      assert Eva.eval(block, context[:pid]) == 10
+    end
   end
 end

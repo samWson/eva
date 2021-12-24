@@ -50,7 +50,8 @@ defmodule Eva do
             Environment.define(env, hd(tail), eval(Enum.at(tail, -1), env))
 
           ["begin" | _] ->
-            evaluate_block(exp, env)
+            block_env = Environment.start_link(env)
+            evaluate_block(exp, block_env)
 
           [term] ->
             evaluate_term(term, env)
