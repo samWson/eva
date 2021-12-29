@@ -47,7 +47,8 @@ defmodule Environment do
   end
 
   @doc """
-  Returns a variable value if it exists or raises an error.
+  Returns a variable value if it exists or returns `:undefined` if it does not
+  exist.
 
   ## Examples
       iex> pid = Environment.start_link()
@@ -58,17 +59,51 @@ defmodule Environment do
   """
   @spec lookup(pid(), any()) :: any() | :undefined
   def lookup(pid, name) do
-    result = Agent.get(pid, fn state -> Map.fetch(state, name) end)
+    env = resolve(pid, name)
 
-    case result do
-      {:ok, value} -> value
+    case env do
+      {:ok, pid} ->
+        Agent.get(pid, fn state -> Map.get(state, name) end)
       _ ->
-        Agent.get(pid, fn state -> Map.get(state, "parent_env") end)
-        |> resolve(name)
+        :undefined
+    end
+  end
+
+  @doc """
+  Assigns to a variable and returns the value or returns `:undefined` if the
+  variable does not exist.
+
+  ## Examples
+      iex> pid = Environment.start_link()
+      iex> Environment.define(pid, "x", 10)
+      10
+      iex> Environment.assign(pid, "x", 100)
+      100
+      iex> Environment.lookup(pid, "x")
+      100
+  """
+  @spec assign(pid(), String.t(), any()) :: any() | :undefined
+  def assign(pid, name, value) do
+    env = resolve(pid, name)
+
+    case env do
+      {:ok, pid} ->
+        Agent.update(pid, fn state -> Map.put(state, name, value) end)
+        value
+      _ -> :undefined
     end
   end
 
   defp resolve(nil, _), do: :undefined
 
-  defp resolve(pid, name), do: lookup(pid, name)
+  defp resolve(pid, name) do
+    has_key = Agent.get(pid, fn state -> Map.has_key?(state, name) end)
+
+    if has_key do
+      {:ok, pid}
+    else
+      parent = Agent.get(pid, fn state -> Map.get(state, "parent_env") end)
+      resolve(parent, name)
+    end
+  end
 end

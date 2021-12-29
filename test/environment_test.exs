@@ -59,4 +59,23 @@ defmodule EnvironmentTest do
       assert Environment.lookup(child, "x") == :undefined
     end
   end
+
+  describe "assignment to an existing variable" do
+    test "it resolves the variable, assigns the new value, and returns it" do
+      env = Environment.start_link()
+      Environment.define(env, "x", 10)
+
+      assert Environment.lookup(env, "x") == 10
+
+      assert Environment.assign(env, "x", 100) == 100
+      assert Environment.lookup(env, "x") == 100
+    end
+  end
+
+  describe "assignment to a non-existant variable" do
+    test "it returns `:undefined`" do
+      env = Environment.start_link()
+      assert Environment.assign(env, "x", 100) == :undefined
+    end
+  end
 end

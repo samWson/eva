@@ -85,6 +85,12 @@ defmodule EvaTest do
       assert assignment == 4
       assert Eva.eval(["z"], context[:pid]) == 4
     end
+
+    test "assignment to an undeclared variable", context do
+      assert_raise RuntimeError, ~s(Assignment to undeclared variable "x".), fn ->
+        Eva.eval(["set", "x", 10], context[:pid])
+      end
+    end
   end
 
   describe "Blocks" do
@@ -123,6 +129,18 @@ defmodule EvaTest do
       ]
 
       assert Eva.eval(block, context[:pid]) == 20
+    end
+
+    test "variable declaration and assignment", context do
+      block = ["begin",
+        ["var", "data", 10],
+        ["begin",
+          ["set", "data", 100]
+        ],
+        "data"
+      ]
+
+      assert Eva.eval(block, context[:pid])
     end
   end
 end

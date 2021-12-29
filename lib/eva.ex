@@ -49,12 +49,22 @@ defmodule Eva do
           ["var" | tail] ->
             Environment.define(env, hd(tail), eval(Enum.at(tail, -1), env))
 
+          ["set" | tail] ->
+            result = Environment.assign(env, hd(tail), eval(Enum.at(tail, -1), env))
+            if result == :undefined do
+              raise "Assignment to undeclared variable #{inspect(hd(tail))}."
+            else
+              result
+            end
+
           ["begin" | _] ->
             block_env = Environment.start_link(env)
             evaluate_block(exp, block_env)
 
           [term] ->
             evaluate_term(term, env)
+
+          _ -> raise "Unimplemented: #{inspect(exp)}"
         end
 
       true ->
