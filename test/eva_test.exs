@@ -201,4 +201,23 @@ defmodule EvaTest do
       assert Eva.eval(block, context[:pid]) == 30
     end
   end
+
+  describe "`while` loops" do
+    test "loop while condition is `true`", context do
+      block = ["begin",
+        ["var", "counter", 0],
+        ["var", "result", 0],
+
+        ["while", ["<", "counter", 10],
+          ["begin",
+            ["set", "result", ["+", "result", 1]],
+            ["set", "counter", ["+", "counter", 1]]
+          ],
+        ],
+        "result"
+      ]
+
+      assert Eva.eval(block, context[:pid]) == 10
+    end
+  end
 end

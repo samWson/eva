@@ -83,6 +83,9 @@ defmodule Eva do
               eval(alternate, env)
             end
 
+          ["while", condition, block] ->
+            evaluate_while(condition, block, env)
+
           [term] ->
             evaluate_term(term, env)
 
@@ -147,5 +150,14 @@ defmodule Eva do
     result = eval(exp, env)
 
     evaluate_block(tail, env, result)
+  end
+
+  defp evaluate_while(condition, block, env, result \\ nil) do
+    if eval(condition, env) do
+      result = eval(block, env)
+      evaluate_while(condition, block, env, result)
+    end
+
+    result
   end
 end
