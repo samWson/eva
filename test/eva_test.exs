@@ -39,6 +39,48 @@ defmodule EvaTest do
     end
   end
 
+  describe "Comparison operators" do
+    test ~s(["<", 1, 4] is true), context do
+      assert Eva.eval(["<", 1, 4], context[:pid])
+    end
+
+    test ~s(["<", 4, 4] is false), context do
+      refute Eva.eval(["<", 4, 4], context[:pid])
+    end
+
+    test ~s([">", 4, 1] is true), context do
+      assert Eva.eval([">", 4, 1], context[:pid])
+    end
+
+    test ~s([">", 4, 4] is false), context do
+      refute Eva.eval([">", 4, 4], context[:pid])
+    end
+
+    test ~s(["<=", 4, 4] is true), context do
+      assert Eva.eval(["<=", 4, 4], context[:pid])
+    end
+
+    test ~s(["<=", 5, 4] is false), context do
+      refute Eva.eval(["<=", 5, 4], context[:pid])
+    end
+
+    test ~s([">=", 1, 4] is true), context do
+      assert Eva.eval([">=", 4, 4], context[:pid])
+    end
+
+    test ~s([">=", 1, 4] is false), context do
+      refute Eva.eval([">=", 1, 4], context[:pid])
+    end
+
+    test ~s(["=", 1, 4] is true), context do
+      assert Eva.eval(["=", 4, 4], context[:pid])
+    end
+
+    test ~s(["=", 1, 4] is false), context do
+      refute Eva.eval(["=", 1, 4], context[:pid])
+    end
+  end
+
   describe "Variables" do
     test "[\"var\", \"x\", 10]", context do
       assignment = Eva.eval(["var", "x", 10], context[:pid])
@@ -140,7 +182,23 @@ defmodule EvaTest do
         "data"
       ]
 
-      assert Eva.eval(block, context[:pid])
+      assert Eva.eval(block, context[:pid]) == 100
+    end
+  end
+
+  describe ~s(`if` expressions) do
+    test "alternate branch is executed", context do
+      block = ["begin",
+        ["var", "x", 10],
+        ["var", "y", 0],
+        ["if", [">", "x", 10],
+          ["set", "y", 20],
+          ["set", "y", 30]
+        ],
+        "y"
+      ]
+
+      assert Eva.eval(block, context[:pid]) == 30
     end
   end
 end

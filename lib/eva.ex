@@ -46,6 +46,21 @@ defmodule Eva do
           ["/" | tail] ->
             eval(hd(tail), env) / eval(Enum.at(tail, -1), env)
 
+          ["<", left, right] ->
+            eval(left, env) < eval(right, env)
+
+          [">", left, right] ->
+            eval(left, env) > eval(right, env)
+
+          ["<=", left, right] ->
+            eval(left, env) <= eval(right, env)
+
+          [">=", left, right] ->
+            eval(left, right) >= eval(right, env)
+
+          ["=", left, right] ->
+            eval(left, right) == eval(right, env)
+
           ["var" | tail] ->
             Environment.define(env, hd(tail), eval(Enum.at(tail, -1), env))
 
@@ -60,6 +75,13 @@ defmodule Eva do
           ["begin" | _] ->
             block_env = Environment.start_link(env)
             evaluate_block(exp, block_env)
+
+          ["if", condition, consequent, alternate] ->
+            if eval(condition, env) do
+              eval(consequent, env)
+            else
+              eval(alternate, env)
+            end
 
           [term] ->
             evaluate_term(term, env)
